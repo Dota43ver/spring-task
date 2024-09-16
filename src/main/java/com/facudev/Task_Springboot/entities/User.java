@@ -1,5 +1,6 @@
 package com.facudev.Task_Springboot.entities;
 
+import com.facudev.Task_Springboot.dto.UserDto;
 import com.facudev.Task_Springboot.enums.UserRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -56,4 +57,14 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public UserDto getUserDto(){
+        UserDto userDto = new UserDto();
+        userDto.setId(id);
+        userDto.setName(name);
+        userDto.setEmail(email);
+        userDto.setUserRole(userRole);
+        return userDto;
+    }
+
 }
