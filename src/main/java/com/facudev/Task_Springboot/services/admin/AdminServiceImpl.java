@@ -57,4 +57,9 @@ public class AdminServiceImpl implements AdminService{
                 .map(Task::getTaskDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteTask(Long id) {
+        taskRepository.deleteById(id);
+    }
 }
