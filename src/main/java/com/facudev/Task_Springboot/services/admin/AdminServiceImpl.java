@@ -72,16 +72,27 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public TaskDto updateTask(Long id, TaskDto taskDto) {
         Optional<Task> optionalTask = taskRepository.findById(id);
-        if(optionalTask.isPresent()){
+        Optional<User> optionalUser = userRepository.findById(taskDto.getEmployeeId());
+        if(optionalTask.isPresent() && optionalUser.isPresent()){
             Task existingTask = optionalTask.get();
             existingTask.setTitle(taskDto.getTitle());
             existingTask.setDescription(taskDto.getDescription());
             existingTask.setDueDate(taskDto.getDueDate());
             existingTask.setPriority(taskDto.getPriority());
             existingTask.setTaskStatus(mapStringToTaskStatus(String.valueOf(taskDto.getTaskStatus())));
+            existingTask.setUser(optionalUser.get());
             return taskRepository.save(existingTask).getTaskDTO();
         }
         return null;
+    }
+
+    @Override
+    public List<TaskDto> searchTaskByTitle(String title) {
+        return taskRepository.findAllByTitleContaining(title)
+                .stream()
+                .sorted(Comparator.comparing(Task::getDueDate).reversed())
+                .map(Task::getTaskDTO)
+                .collect(Collectors.toList());
     }
 
     private TaskStatus mapStringToTaskStatus(String status){
