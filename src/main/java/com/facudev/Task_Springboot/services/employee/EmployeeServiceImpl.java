@@ -22,14 +22,22 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public List<TaskDto> getTaskByUserId() {
-        User user =jwtUtil.getLogeedInUser();
-        if(user != null){
-            taskRepository.findAllByUserId(user.getId())
+        User user = jwtUtil.getLoggedInUser();
+        System.out.println("User retrieved in EmployeeServiceImpl: " + user);
+
+        if (user != null) {
+            List<TaskDto> tasks = taskRepository.findAllByUserId(user.getId())
                     .stream()
                     .sorted(Comparator.comparing(Task::getDueDate).reversed())
                     .map(Task::getTaskDTO)
                     .collect(Collectors.toList());
+
+            System.out.println("Tasks retrieved for user " + user.getEmail() + ": " + tasks);
+
+            return tasks;
         }
+
+        System.out.println("User not found or is null in getTaskByUserId");
         throw new EntityNotFoundException("User not found");
     }
 }

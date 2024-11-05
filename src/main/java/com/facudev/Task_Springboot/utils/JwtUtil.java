@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,14 +69,28 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
     }
 
-    public User getLogeedInUser(){
+    public User getLoggedInUser() {
+        // Obtener la autenticación del contexto de seguridad
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null && authentication.isAuthenticated()){
-            User user = (User) authentication.getPrincipal();
-            Optional<User> optionalUser = userRepository.findById(user.getId());
-            return optionalUser.orElse(null);
+        System.out.println("Authentication object: " + authentication);
+
+        // Verificar si la autenticación no es nula y está autenticada
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+            System.out.println("Authenticated username: " + username);
+
+            // Buscar el usuario en el repositorio por email (username)
+            return userRepository.findFirstByEmail(username)
+                    .orElseThrow(() -> {
+                        System.out.println("User not found in repository with email: " + username);
+                        return new EntityNotFoundException("User not found");
+                    });
         }
-            return null;
+
+        System.out.println("No authenticated user found or principal is not of type UserDetails.");
+        throw new EntityNotFoundException("User not found");
     }
+
 
 }
