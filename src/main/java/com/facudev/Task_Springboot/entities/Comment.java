@@ -37,6 +37,10 @@ public class Comment {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(id);
         commentDTO.setContent(content);
+        commentDTO.setCreatedAt(createdAt);
+        commentDTO.setTaskId(task.getId());
+        commentDTO.setPostedBy(user.getName());
+        return commentDTO;
     }
 
 }
