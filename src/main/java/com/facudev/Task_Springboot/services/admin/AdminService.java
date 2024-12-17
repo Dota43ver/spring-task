@@ -1,5 +1,6 @@
 package com.facudev.Task_Springboot.services.admin;
 
+import com.facudev.Task_Springboot.dto.CommentDTO;
 import com.facudev.Task_Springboot.dto.TaskDto;
 import com.facudev.Task_Springboot.dto.UserDto;
 
@@ -20,4 +21,6 @@ public interface AdminService {
     TaskDto updateTask(Long id, TaskDto taskDto);
 
     List <TaskDto> searchTaskByTitle(String title);
+
+    CommentDTO createComment(Long taskId,String content);
 }
